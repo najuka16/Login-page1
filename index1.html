@@ -116,7 +116,7 @@
     </nav>
 
     <main>
-      <!-- Create Account -->
+      
       <section id="create" class="section">
         <h2>Create Account</h2>
         <input type="text" id="accNo" placeholder="Account Number" />
@@ -126,7 +126,7 @@
         <p id="createMsg"></p>
       </section>
 
-      <!-- Deposit -->
+   
       <section id="deposit" class="section" style="display:none;">
         <h2>Deposit Money</h2>
         <input type="text" id="depAccNo" placeholder="Account Number" />
@@ -135,7 +135,7 @@
         <p id="depMsg"></p>
       </section>
 
-      <!-- Withdraw -->
+   
       <section id="withdraw" class="section" style="display:none;">
         <h2>Withdraw Money</h2>
         <input type="text" id="withAccNo" placeholder="Account Number" />
@@ -144,7 +144,7 @@
         <p id="withMsg"></p>
       </section>
 
-      <!-- Check Balance -->
+      
       <section id="balance" class="section" style="display:none;">
         <h2>Check Balance</h2>
         <input type="text" id="balAccNo" placeholder="Account Number" />
@@ -152,7 +152,6 @@
         <p id="balMsg"></p>
       </section>
 
-      <!-- Transaction History -->
       <section id="transactions" class="section" style="display:none;">
         <h2>Transaction History</h2>
         <input type="text" id="transAccNo" placeholder="Account Number" />
@@ -168,7 +167,7 @@
   </div>
 
   <script>
-    // Load accounts from localStorage
+ 
     let accounts = JSON.parse(localStorage.getItem("accounts")) || {};
 
     function saveAccounts() {
@@ -310,3 +309,4 @@
   </script>
 </body>
 </html>
+
