@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bank Management System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f1f3f6;
+    }
+
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .dashboard {
+      display: flex;
+      height: 100vh;
+    }
+
+    nav {
+      width: 220px;
+      background: #002244;
+      color: white;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 15px;
+      text-align: left;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    nav button:hover,
+    nav button.active {
+      background: #004488;
+    }
+
+    main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: white;
+    }
+
+    h2 {
+      color: #003366;
+      margin-top: 0;
+    }
+
+    input,
+    button {
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    button.action {
+      background: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button.action:hover {
+      background: #0055aa;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #003366;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>🏦 Bank Management System</header>
+  <div class="dashboard">
+    <nav>
+      <button class="active" onclick="showSection('create')">Create Account</button>
+      <button onclick="showSection('deposit')">Deposit</button>
+      <button onclick="showSection('withdraw')">Withdraw</button>
+      <button onclick="showSection('balance')">Check Balance</button>
+      <button onclick="showSection('transactions')">Transaction History</button>
+    </nav>
+
+    <main>
+      <!-- Create Account -->
+      <section id="create" class="section">
+        <h2>Create Account</h2>
+        <input type="text" id="accNo" placeholder="Account Number" />
+        <input type="text" id="name" placeholder="Account Holder Name" />
+        <input type="number" id="initBal" placeholder="Initial Deposit" />
+        <button class="action" onclick="createAccount()">Create</button>
+        <p id="createMsg"></p>
+      </section>
+
+      <!-- Deposit -->
+      <section id="deposit" class="section" style="display:none;">
+        <h2>Deposit Money</h2>
+        <input type="text" id="depAccNo" placeholder="Account Number" />
+        <input type="number" id="depAmt" placeholder="Deposit Amount" />
+        <button class="action" onclick="deposit()">Deposit</button>
+        <p id="depMsg"></p>
+      </section>
+
+      <!-- Withdraw -->
+      <section id="withdraw" class="section" style="display:none;">
+        <h2>Withdraw Money</h2>
+        <input type="text" id="withAccNo" placeholder="Account Number" />
+        <input type="number" id="withAmt" placeholder="Withdraw Amount" />
+        <button class="action" onclick="withdraw()">Withdraw</button>
+        <p id="withMsg"></p>
+      </section>
+
+      <!-- Check Balance -->
+      <section id="balance" class="section" style="display:none;">
+        <h2>Check Balance</h2>
+        <input type="text" id="balAccNo" placeholder="Account Number" />
+        <button class="action" onclick="checkBalance()">Check</button>
+        <p id="balMsg"></p>
+      </section>
+
+      <!-- Transaction History -->
+      <section id="transactions" class="section" style="display:none;">
+        <h2>Transaction History</h2>
+        <input type="text" id="transAccNo" placeholder="Account Number" />
+        <button class="action" onclick="showTransactions()">Show</button>
+        <table id="transTable">
+          <thead>
+            <tr><th>Type</th><th>Amount</th><th>Date</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Load accounts from localStorage
+    let accounts = JSON.parse(localStorage.getItem("accounts")) || {};
+
+    function saveAccounts() {
+      localStorage.setItem("accounts", JSON.stringify(accounts));
+    }
+
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+      document.getElementById(id).style.display = "block";
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    function createAccount() {
+      let accNo = document.getElementById("accNo").value.trim();
+      let name = document.getElementById("name").value.trim();
+      let initBal = parseFloat(document.getElementById("initBal").value);
+      let msg = document.getElementById("createMsg");
+
+      if (!accNo || !name || isNaN(initBal)) {
+        msg.textContent = "⚠️ Please fill all fields correctly!";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (accounts[accNo]) {
+        msg.textContent = "❌ Account already exists!";
+        msg.style.color = "red";
+        return;
+      }
+
+      accounts[accNo] = {
+        name: name,
+        balance: initBal,
+        transactions: [{ type: "Initial Deposit", amount: initBal, date: new Date().toLocaleString() }]
+      };
+
+      saveAccounts();
+      msg.textContent = "✅ Account created successfully!";
+      msg.style.color = "green";
+
+      document.getElementById("accNo").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("initBal").value = "";
+    }
+
+    function deposit() {
+      let accNo = document.getElementById("depAccNo").value.trim();
+      let amt = parseFloat(document.getElementById("depAmt").value);
+      let msg = document.getElementById("depMsg");
+
+      if (!accounts[accNo]) {
+        msg.textContent = "❌ Account not found!";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (isNaN(amt) || amt <= 0) {
+        msg.textContent = "⚠️ Enter valid amount!";
+        msg.style.color = "red";
+        return;
+      }
+
+      accounts[accNo].balance += amt;
+      accounts[accNo].transactions.push({ type: "Deposit", amount: amt, date: new Date().toLocaleString() });
+
+      saveAccounts();
+      msg.textContent = `✅ ₹${amt} deposited successfully!`;
+      msg.style.color = "green";
+    }
+
+    function withdraw() {
+      let accNo = document.getElementById("withAccNo").value.trim();
+      let amt = parseFloat(document.getElementById("withAmt").value);
+      let msg = document.getElementById("withMsg");
+
+      if (!accounts[accNo]) {
+        msg.textContent = "❌ Account not found!";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (isNaN(amt) || amt <= 0) {
+        msg.textContent = "⚠️ Enter valid amount!";
+        msg.style.color = "red";
+        return;
+      }
+
+      if (amt > accounts[accNo].balance) {
+        msg.textContent = "❌ Insufficient funds!";
+        msg.style.color = "red";
+        return;
+      }
+
+      accounts[accNo].balance -= amt;
+      accounts[accNo].transactions.push({ type: "Withdraw", amount: -amt, date: new Date().toLocaleString() });
+
+      saveAccounts();
+      msg.textContent = `✅ ₹${amt} withdrawn successfully!`;
+      msg.style.color = "green";
+    }
+
+    function checkBalance() {
+      let accNo = document.getElementById("balAccNo").value.trim();
+      let msg = document.getElementById("balMsg");
+
+      if (!accounts[accNo]) {
+        msg.textContent = "❌ Account not found!";
+        msg.style.color = "red";
+        return;
+      }
+
+      msg.innerHTML = `
+        👤 Name: <b>${accounts[accNo].name}</b><br>
+        💰 Balance: <b>₹${accounts[accNo].balance}</b>
+      `;
+      msg.style.color = "black";
+    }
+
+    function showTransactions() {
+      let accNo = document.getElementById("transAccNo").value.trim();
+      let tbody = document.querySelector("#transTable tbody");
+      tbody.innerHTML = "";
+
+      if (!accounts[accNo]) {
+        tbody.innerHTML = "<tr><td colspan='3'>❌ Account not found!</td></tr>";
+        return;
+      }
+
+      accounts[accNo].transactions.forEach(t => {
+        let row = `<tr>
+          <td>${t.type}</td>
+          <td>${t.amount}</td>
+          <td>${t.date}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+  </script>
+</body>
+</html>
